@@ -7,10 +7,13 @@ import javax.swing.JLabel;
 import java.awt.Font;
 import javax.swing.JTextField;
 import javax.swing.event.ListDataListener;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 
 import br.senai.sp.jandira.enums.Consoles;
-import br.senai.sp.jandira.enums.Fabricantes;
+import br.senai.sp.jandira.model.Fabricantes;
 import br.senai.sp.jandira.model.Jogo;
+import br.senai.sp.jandira.repository.FabricanteRepository;
 import br.senai.sp.jandira.repository.JogoRepository;
 import javax.swing.JRadioButton;
 import javax.swing.ButtonGroup;
@@ -23,22 +26,30 @@ import javax.swing.JButton;
 import javax.swing.JScrollPane;
 import javax.swing.JList;
 import javax.swing.JOptionPane;
+import javax.swing.JTextArea;
 
 public class FrameFormulario extends JFrame {
 	
 	private JogoRepository colecao;
+	private int posicao;
 	private JPanel contentPane;
+	private FabricanteRepository fabricantes;
+	private Fabricantes fabricante;
 	private JTextField txtTitulo;
-	private final ButtonGroup buttonEstado = new ButtonGroup();
 	private JTextField txtValor;
+	private JTextArea txtObs;
+	private JRadioButton rdbtnGratis;
+	private JRadioButton rdbtnZerado;
 	private JComboBox<String> comboFabricante = new JComboBox<String>();
 	private JComboBox<String> comboConsole = new JComboBox<String>();
 	private DefaultListModel<String> modelJogos = new DefaultListModel<String>();
 	private DefaultComboBoxModel<String> modelFabricante = new DefaultComboBoxModel<String>();
 	private DefaultComboBoxModel<String> modelConsole = new DefaultComboBoxModel<String>();
-	private JTextField txtObs;
 
 	public FrameFormulario() {
+		int tamanhoColecao = Integer.parseInt(JOptionPane.showInputDialog("Por favor, insira o tamanho da coleção:"));
+		colecao = new JogoRepository(tamanhoColecao);
+		
 		setResizable(false);
 		
 		setTitle("Gest\u00E3o de Jogos");
@@ -50,7 +61,7 @@ public class FrameFormulario extends JFrame {
 		contentPane.setLayout(null);
 		
 		JPanel panelCadastro = new JPanel();
-		panelCadastro.setBackground(new Color(119, 136, 153));
+		panelCadastro.setBackground(new Color(112, 128, 144));
 		panelCadastro.setBounds(10, 11, 764, 200);
 		contentPane.add(panelCadastro);
 		panelCadastro.setLayout(null);
@@ -66,29 +77,12 @@ public class FrameFormulario extends JFrame {
 		panelCadastro.add(txtTitulo);
 		txtTitulo.setColumns(10);
 		
-		JRadioButton rdbtnZerado = new JRadioButton("Zerado");
+		rdbtnZerado = new JRadioButton("Zerado");
 		rdbtnZerado.setForeground(Color.WHITE);
 		rdbtnZerado.setFont(new Font("SansSerif", Font.PLAIN, 15));
-		rdbtnZerado.setBackground(new Color(119, 136, 153));
-		buttonEstado.add(rdbtnZerado);
+		rdbtnZerado.setBackground(new Color(112, 128, 144));
 		rdbtnZerado.setBounds(10, 50, 77, 23);
 		panelCadastro.add(rdbtnZerado);
-		
-		JRadioButton rdbtnAndamento = new JRadioButton("Em andamento");
-		rdbtnAndamento.setFont(new Font("SansSerif", Font.PLAIN, 15));
-		rdbtnAndamento.setForeground(Color.WHITE);
-		rdbtnAndamento.setBackground(new Color(119, 136, 153));
-		buttonEstado.add(rdbtnAndamento);
-		rdbtnAndamento.setBounds(89, 50, 135, 23);
-		panelCadastro.add(rdbtnAndamento);
-		
-		JRadioButton rdbtnNIniciado = new JRadioButton("N\u00E3o iniciado");
-		rdbtnNIniciado.setFont(new Font("SansSerif", Font.PLAIN, 15));
-		rdbtnNIniciado.setForeground(Color.WHITE);
-		rdbtnNIniciado.setBackground(new Color(119, 136, 153));
-		buttonEstado.add(rdbtnNIniciado);
-		rdbtnNIniciado.setBounds(228, 50, 110, 23);
-		panelCadastro.add(rdbtnNIniciado);
 		
 		JLabel lblFabricante = new JLabel("Fabricante");
 		lblFabricante.setForeground(Color.WHITE);
@@ -98,7 +92,7 @@ public class FrameFormulario extends JFrame {
 		
 		comboFabricante.setBounds(97, 80, 200, 22);
 		panelCadastro.add(comboFabricante);
-		salvarModelFabricante();
+
 		comboFabricante.setModel(modelFabricante);
 		
 		JLabel lblConsole = new JLabel("Console");
@@ -106,8 +100,6 @@ public class FrameFormulario extends JFrame {
 		lblConsole.setFont(new Font("SansSerif", Font.PLAIN, 15));
 		lblConsole.setBounds(10, 115, 77, 20);
 		panelCadastro.add(lblConsole);
-		
-		comboConsole.setEnabled(false);
 		comboConsole.setBounds(97, 113, 200, 22);
 		panelCadastro.add(comboConsole);
 		salvarModelConsole();
@@ -121,42 +113,46 @@ public class FrameFormulario extends JFrame {
 		
 		txtValor = new JTextField();
 		txtValor.setColumns(10);
-		txtValor.setBounds(97, 146, 100, 20);
+		txtValor.setBounds(97, 146, 65, 20);
 		panelCadastro.add(txtValor);
 		
-		JRadioButton rdbtnGratis = new JRadioButton("Gratuito");
-		rdbtnGratis.setBackground(new Color(119, 136, 153));
-		rdbtnGratis.setBounds(212, 148, 100, 20);
+		rdbtnGratis = new JRadioButton("Gratuito");
+		rdbtnGratis.setBackground(new Color(112, 128, 144));
+		rdbtnGratis.setBounds(174, 145, 100, 20);
 		panelCadastro.add(rdbtnGratis);
 		
 		JLabel lblObservacoes = new JLabel("Observa\u00E7\u00F5es");
 		lblObservacoes.setForeground(Color.WHITE);
 		lblObservacoes.setFont(new Font("SansSerif", Font.PLAIN, 15));
-		lblObservacoes.setBounds(360, 11, 100, 20);
+		lblObservacoes.setBounds(425, 20, 100, 20);
 		panelCadastro.add(lblObservacoes);
 		
 		JButton btnSalvar = new JButton("Salvar");
 		btnSalvar.setFont(new Font("SansSerif", Font.BOLD, 12));
-		btnSalvar.setBounds(600, 38, 154, 30);
+		btnSalvar.setBounds(600, 60, 154, 30);
 		panelCadastro.add(btnSalvar);
 		
 		JButton btnDeletar = new JButton("Deletar");
 		btnDeletar.setFont(new Font("SansSerif", Font.BOLD, 12));
-		btnDeletar.setBounds(600, 79, 154, 30);
+		btnDeletar.setBounds(600, 95, 154, 30);
 		panelCadastro.add(btnDeletar);
 		
-		txtObs = new JTextField();
-		txtObs.setBounds(360, 40, 154, 140);
-		panelCadastro.add(txtObs);
-		txtObs.setColumns(10);
-		
 		JButton btnVoltar = new JButton("<");
-		btnVoltar.setBounds(600, 124, 75, 30);
+		btnVoltar.setBounds(600, 136, 75, 30);
 		panelCadastro.add(btnVoltar);
 		
 		JButton btnAvancar = new JButton(">");
-		btnAvancar.setBounds(679, 124, 75, 30);
+		btnAvancar.setBounds(679, 136, 75, 30);
 		panelCadastro.add(btnAvancar);
+		
+		txtObs = new JTextArea();
+		txtObs.setLineWrap(true);
+		txtObs.setBounds(425, 44, 141, 122);
+		panelCadastro.add(txtObs);
+		
+		JButton btnEditar = new JButton("Editar");
+		btnEditar.setFont(new Font("SansSerif", Font.BOLD, 12));
+		btnEditar.setBounds(600, 24, 154, 30);
 		
 		JPanel panelLista = new JPanel();
 		panelLista.setBackground(new Color(119, 136, 153));
@@ -171,6 +167,7 @@ public class FrameFormulario extends JFrame {
 		JList<String> listJogos = new JList<String>();
 		scrollJTable.setViewportView(listJogos);
 		listJogos.setModel(modelJogos);
+
 		
 		// listeners 
 		
@@ -183,6 +180,59 @@ public class FrameFormulario extends JFrame {
 				} else {
 					txtValor.setEnabled(true);
 					txtValor.setBackground(new Color(255, 255, 255));
+				}
+			}
+		});
+		
+		btnDeletar.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {	
+				if (listJogos.isSelectionEmpty()) {
+					JOptionPane.showMessageDialog(null, "Você deve selecionar um item da lista!", "Presta atenção...!", JOptionPane.WARNING_MESSAGE);
+				} else {
+					modelJogos.removeRange(listJogos.getMinSelectionIndex(), listJogos.getMaxSelectionIndex());
+					for (int quantia = listJogos.getMinSelectionIndex(); quantia < listJogos.getMaxSelectionIndex(); quantia++) {
+						colecao.deletarJogo(quantia);
+					}
+				}
+
+			}
+		});
+		
+		btnSalvar.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				if (verificarDados() == false) {
+					JOptionPane.showMessageDialog(null, "Preencha os campos de cadastro!", "Tá falando sério?", JOptionPane.ERROR_MESSAGE);
+				} else {
+					Jogo novoJogo = new Jogo();
+					novoJogo.setTitulo(txtTitulo.getText());
+					novoJogo.setValor(txtValor.getText());
+					novoJogo.setConsole(definirConsole());
+					novoJogo.setObservacoes(txtObs.getText());
+					
+					if (rdbtnZerado.isSelected()) {
+						novoJogo.setEstado("Zerado");
+					} else {
+						novoJogo.setEstado("Em andamento");
+					}
+					
+					if (txtValor.isEditable()) {
+						novoJogo.setValor(txtValor.getText());					
+					} else {
+						novoJogo.setValor("Gratuito");
+					}
+				
+					modelJogos.addElement(novoJogo.getTitulo());
+					colecao.cadastrar(novoJogo, posicao);
+					posicao++;
+					
+					if (modelJogos.getSize() == colecao.getTamanho()) {
+						 btnSalvar.setEnabled(false);
+						 JOptionPane.showMessageDialog(null, "Você alcançou o limite da coleção! Delete alguns jogos ou crie uma nova coleção!, ", "Respira...", JOptionPane.ERROR_MESSAGE);
+					}
 				}
 			}
 		});
@@ -209,62 +259,35 @@ public class FrameFormulario extends JFrame {
 			}
 		});
 		
-		btnDeletar.addActionListener(new ActionListener() {
+		listJogos.addListSelectionListener(new ListSelectionListener() {
 			
 			@Override
-			public void actionPerformed(ActionEvent e) {	
-				if (listJogos.isSelectionEmpty()) {
-					JOptionPane.showMessageDialog(null, "Você deve selecionar um item da lista!", "Presta atenção...!", JOptionPane.WARNING_MESSAGE);
+			public void valueChanged(ListSelectionEvent e) {
+				int indice = listJogos.getSelectedIndex();
+				Jogo jogoSelecionado = colecao.listarJogo(indice);
+				
+				txtTitulo.requestFocus();
+				txtTitulo.setText(colecao.listarJogo(indice).getTitulo());
+				
+				if (jogoSelecionado.getValor().equals("Gratuito")) {
+					rdbtnGratis.setEnabled(true);
 				} else {
-					modelJogos.removeRange(listJogos.getMinSelectionIndex(), listJogos.getMaxSelectionIndex());
-					
+					txtValor.setText(jogoSelecionado.getValor());
 				}
+				
+				txtObs.setText(jogoSelecionado.getObservacoes());
+				
+				if (jogoSelecionado.getEstado().equals("Zerado")) {
+					rdbtnZerado.setSelected(true);
+				} else {
+					rdbtnZerado.setSelected(false);
+				}
+				
 			}
 		});
-		
-		
-		final class gravar implements ActionListener {
-
-			@Override
-			public void actionPerformed(ActionEvent e) {	
-				Jogo novoJogo = new Jogo();
-				novoJogo.setTitulo(txtTitulo.getText());
-				novoJogo.setValor(txtValor.getText());
-				novoJogo.setFabricante(definirFabricante());
-				novoJogo.setConsole(definirConsole());
-				
-				if (txtValor.isEditable()) {
-					novoJogo.setValor(txtValor.getText());					
-				} else {
-					novoJogo.setValor("Gratuito");
-				}
-				
-				modelJogos.addElement(novoJogo.getTitulo());
-			}
-		}
-
-		btnSalvar.addActionListener(new gravar());
-	
 	}
 	
 	//criando metodos 
-	//definir fabricante
-	private Fabricantes definirFabricante() {
-		if (comboFabricante.getSelectedIndex() == 0) {
-			return Fabricantes.SONY;
-		} else if (comboFabricante.getSelectedIndex() == 1) {
-			return Fabricantes.MICROSOFT;
-		} else if (comboFabricante.getSelectedIndex() == 2) {
-			return Fabricantes.NINTENDO;
-		} else if (comboFabricante.getSelectedIndex() == 3) {
-			return Fabricantes.EA;
-		} else if (comboFabricante.getSelectedIndex() == 4) {
-			return Fabricantes.EPIC;
-		} else {
-			return Fabricantes.OUTRO;
-		}
-	}
-	
 	//definir console
 	private Consoles definirConsole() {
 		if (comboConsole.getSelectedIndex() == 0) {
@@ -287,10 +310,19 @@ public class FrameFormulario extends JFrame {
 			modelConsole.addElement(console.getDescricao());
 		}
 	}
+
 	
-	private void salvarModelFabricante() {
-		for (Fabricantes fabricante : Fabricantes.values()) {
-			modelFabricante.addElement(fabricante.getDescricao());
+	private boolean verificarDados() {
+		if (txtTitulo.getText() == null) {
+			return false;
+		} else if (txtValor.getText() == null && rdbtnGratis.isSelected() == false) {
+			return false;
+		} else if (rdbtnZerado.isSelected() == false) {
+			return false;
+		} else if (txtObs.getText() == null){
+			return false;
+		} else {
+			return true;
 		}
 	}
 }

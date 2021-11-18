@@ -1,7 +1,6 @@
 package br.senai.sp.jandira.model;
 
 import br.senai.sp.jandira.enums.Consoles;
-import br.senai.sp.jandira.enums.Fabricantes;
 
 public class Jogo {
 	private String titulo;
@@ -9,6 +8,7 @@ public class Jogo {
 	private Fabricantes fabricante;
 	private String estado;
 	private Consoles console;
+	private String observacoes;
 	
 	public String getTitulo() {
 		return titulo;
@@ -43,4 +43,12 @@ public class Jogo {
 		return console;
 	}
 
+	public void setObservacoes(String observacoes) {
+		this.observacoes = observacoes;
+	}
+	
+	public String getObservacoes() {
+		return observacoes;
+	}
+	
 }
