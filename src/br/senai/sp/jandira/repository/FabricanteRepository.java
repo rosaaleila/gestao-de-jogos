@@ -5,11 +5,25 @@ import br.senai.sp.jandira.model.Fabricantes;
 public class FabricanteRepository {
 
 	private Fabricantes[] empresas;
-
-	public FabricanteRepository() {
-		empresas = new Fabricantes[6];
-	}
+	private Fabricantes sony = new Fabricantes();
+	private Fabricantes nintendo = new Fabricantes();
+	private Fabricantes microsoft = new Fabricantes();
+	private Fabricantes outros = new Fabricantes();
 	
+	
+	public FabricanteRepository() {
+		empresas = new Fabricantes[4];
+		empresas[0] = sony;
+		empresas[1] = microsoft;
+		empresas[2] = nintendo;
+		empresas[3] = outros;
+		
+		sony.setNome("Sony");
+		microsoft.setNome("Microsoft");
+		nintendo.setNome("Nintendo");
+		outros.setNome("Outro");	
+	}
+
 	public FabricanteRepository(int quantidade) {
 		empresas = new Fabricantes[quantidade];
 	}
@@ -33,5 +47,6 @@ public class FabricanteRepository {
 	public void deletarFabricante(int indice) {
 		empresas[indice] = null;
 	}
+
 	
 }

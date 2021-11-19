@@ -33,7 +33,7 @@ public class FrameFormulario extends JFrame {
 	private JogoRepository colecao;
 	private int posicao;
 	private JPanel contentPane;
-	private FabricanteRepository fabricantes;
+	private FabricanteRepository fabricantes = new FabricanteRepository();
 	private Fabricantes fabricante;
 	private JTextField txtTitulo;
 	private JTextField txtValor;
@@ -92,7 +92,7 @@ public class FrameFormulario extends JFrame {
 		
 		comboFabricante.setBounds(97, 80, 200, 22);
 		panelCadastro.add(comboFabricante);
-
+		salvarModelFabricante();
 		comboFabricante.setModel(modelFabricante);
 		
 		JLabel lblConsole = new JLabel("Console");
@@ -100,6 +100,7 @@ public class FrameFormulario extends JFrame {
 		lblConsole.setFont(new Font("SansSerif", Font.PLAIN, 15));
 		lblConsole.setBounds(10, 115, 77, 20);
 		panelCadastro.add(lblConsole);
+		
 		comboConsole.setBounds(97, 113, 200, 22);
 		panelCadastro.add(comboConsole);
 		salvarModelConsole();
@@ -129,13 +130,13 @@ public class FrameFormulario extends JFrame {
 		
 		JButton btnSalvar = new JButton("Salvar");
 		btnSalvar.setFont(new Font("SansSerif", Font.BOLD, 12));
-		btnSalvar.setBounds(600, 60, 154, 30);
+		btnSalvar.setBounds(600, 95, 154, 30);
 		panelCadastro.add(btnSalvar);
 		
-		JButton btnDeletar = new JButton("Deletar");
-		btnDeletar.setFont(new Font("SansSerif", Font.BOLD, 12));
-		btnDeletar.setBounds(600, 95, 154, 30);
-		panelCadastro.add(btnDeletar);
+//		JButton btnDeletar = new JButton("Deletar");
+//		btnDeletar.setFont(new Font("SansSerif", Font.BOLD, 12));
+//		btnDeletar.setBounds(600, 95, 154, 30);
+//		panelCadastro.add(btnDeletar);
 		
 		JButton btnVoltar = new JButton("<");
 		btnVoltar.setBounds(600, 136, 75, 30);
@@ -149,10 +150,6 @@ public class FrameFormulario extends JFrame {
 		txtObs.setLineWrap(true);
 		txtObs.setBounds(425, 44, 141, 122);
 		panelCadastro.add(txtObs);
-		
-		JButton btnEditar = new JButton("Editar");
-		btnEditar.setFont(new Font("SansSerif", Font.BOLD, 12));
-		btnEditar.setBounds(600, 24, 154, 30);
 		
 		JPanel panelLista = new JPanel();
 		panelLista.setBackground(new Color(119, 136, 153));
@@ -184,21 +181,21 @@ public class FrameFormulario extends JFrame {
 			}
 		});
 		
-		btnDeletar.addActionListener(new ActionListener() {
-			
-			@Override
-			public void actionPerformed(ActionEvent e) {	
-				if (listJogos.isSelectionEmpty()) {
-					JOptionPane.showMessageDialog(null, "Você deve selecionar um item da lista!", "Presta atenção...!", JOptionPane.WARNING_MESSAGE);
-				} else {
-					modelJogos.removeRange(listJogos.getMinSelectionIndex(), listJogos.getMaxSelectionIndex());
-					for (int quantia = listJogos.getMinSelectionIndex(); quantia < listJogos.getMaxSelectionIndex(); quantia++) {
-						colecao.deletarJogo(quantia);
-					}
-				}
-
-			}
-		});
+//		btnDeletar.addActionListener(new ActionListener() {
+//			
+//			@Override
+//			public void actionPerformed(ActionEvent e) {	
+//				if (listJogos.isSelectionEmpty()) {
+//					JOptionPane.showMessageDialog(null, "Você deve selecionar um item da lista!", "Presta atenção...!", JOptionPane.WARNING_MESSAGE);
+//				} else {
+//					modelJogos.removeRange(listJogos.getMinSelectionIndex(), listJogos.getMaxSelectionIndex());
+//					for (int quantia = listJogos.getMinSelectionIndex(); quantia < listJogos.getMaxSelectionIndex(); quantia++) {
+//						colecao.deletarJogo(quantia);
+//					}
+//				}
+//
+//			}
+//		});
 		
 		btnSalvar.addActionListener(new ActionListener() {
 			
@@ -212,6 +209,7 @@ public class FrameFormulario extends JFrame {
 					novoJogo.setValor(txtValor.getText());
 					novoJogo.setConsole(definirConsole());
 					novoJogo.setObservacoes(txtObs.getText());
+					novoJogo.setFabricante(definirFabricante());
 					
 					if (rdbtnZerado.isSelected()) {
 						novoJogo.setEstado("Zerado");
@@ -224,7 +222,7 @@ public class FrameFormulario extends JFrame {
 					} else {
 						novoJogo.setValor("Gratuito");
 					}
-				
+
 					modelJogos.addElement(novoJogo.getTitulo());
 					colecao.cadastrar(novoJogo, posicao);
 					posicao++;
@@ -264,9 +262,9 @@ public class FrameFormulario extends JFrame {
 			@Override
 			public void valueChanged(ListSelectionEvent e) {
 				int indice = listJogos.getSelectedIndex();
+				txtTitulo.requestFocus();
 				Jogo jogoSelecionado = colecao.listarJogo(indice);
 				
-				txtTitulo.requestFocus();
 				txtTitulo.setText(colecao.listarJogo(indice).getTitulo());
 				
 				if (jogoSelecionado.getValor().equals("Gratuito")) {
@@ -275,6 +273,9 @@ public class FrameFormulario extends JFrame {
 					txtValor.setText(jogoSelecionado.getValor());
 				}
 				
+				comboConsole.setSelectedIndex(jogoSelecionado.getConsole().ordinal());
+				comboFabricante.setSelectedIndex(salvarIndex());
+				
 				txtObs.setText(jogoSelecionado.getObservacoes());
 				
 				if (jogoSelecionado.getEstado().equals("Zerado")) {
@@ -282,9 +283,9 @@ public class FrameFormulario extends JFrame {
 				} else {
 					rdbtnZerado.setSelected(false);
 				}
-				
 			}
 		});
+		
 	}
 	
 	//criando metodos 
@@ -305,9 +306,39 @@ public class FrameFormulario extends JFrame {
 		}
 	}
 	
+	private Fabricantes definirFabricante() {
+		if (comboConsole.getSelectedIndex() == 0) {
+			return fabricantes.listarFabricante(0);
+		} else if (comboConsole.getSelectedIndex() == 1) {
+			return fabricantes.listarFabricante(1);
+		} else if (comboConsole.getSelectedIndex() == 2) {
+			return fabricantes.listarFabricante(2);
+		} else {
+			return fabricantes.listarFabricante(3);
+		}
+	}
+	
 	private void salvarModelConsole() {
 		for (Consoles console : Consoles.values()) {
 			modelConsole.addElement(console.getDescricao());
+		}
+	}
+	
+	private void salvarModelFabricante() {
+		for (int i = 0; i < fabricantes.getTamanho(); i++) {
+			modelFabricante.addElement(fabricantes.listarFabricante(i).getNome());
+		}
+	}
+	
+	private int salvarIndex() {
+		if (comboConsole.getSelectedIndex() == 0) {
+			return 0;
+		} else if (comboConsole.getSelectedIndex() == 1) {
+			return 1;
+		} else if (comboConsole.getSelectedIndex() == 2) {
+			return 2;
+		} else {
+			return 3;
 		}
 	}
 
@@ -316,8 +347,6 @@ public class FrameFormulario extends JFrame {
 		if (txtTitulo.getText() == null) {
 			return false;
 		} else if (txtValor.getText() == null && rdbtnGratis.isSelected() == false) {
-			return false;
-		} else if (rdbtnZerado.isSelected() == false) {
 			return false;
 		} else if (txtObs.getText() == null){
 			return false;
