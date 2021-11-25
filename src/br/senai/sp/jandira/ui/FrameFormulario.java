@@ -6,17 +6,14 @@ import java.awt.Color;
 import javax.swing.JLabel;
 import java.awt.Font;
 import javax.swing.JTextField;
-import javax.swing.event.ListDataListener;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
-
 import br.senai.sp.jandira.enums.Consoles;
 import br.senai.sp.jandira.model.Fabricantes;
 import br.senai.sp.jandira.model.Jogo;
 import br.senai.sp.jandira.repository.FabricanteRepository;
 import br.senai.sp.jandira.repository.JogoRepository;
 import javax.swing.JRadioButton;
-import javax.swing.ButtonGroup;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.DefaultListModel;
 import javax.swing.JComboBox;
@@ -34,7 +31,6 @@ public class FrameFormulario extends JFrame {
 	private int posicao;
 	private JPanel contentPane;
 	private FabricanteRepository fabricantes = new FabricanteRepository();
-	private Fabricantes fabricante;
 	private JTextField txtTitulo;
 	private JTextField txtValor;
 	private JTextArea txtObs;
@@ -174,6 +170,7 @@ public class FrameFormulario extends JFrame {
 				if (rdbtnGratis.isSelected()) {
 					txtValor.setEnabled(false);
 					txtValor.setBackground(new Color(211, 211, 211));
+					txtValor.setText("");
 				} else {
 					txtValor.setEnabled(true);
 					txtValor.setBackground(new Color(255, 255, 255));
@@ -217,10 +214,10 @@ public class FrameFormulario extends JFrame {
 						novoJogo.setEstado("Em andamento");
 					}
 					
-					if (txtValor.isEditable()) {
-						novoJogo.setValor(txtValor.getText());					
-					} else {
+					if (rdbtnGratis.isSelected()) {
 						novoJogo.setValor("Gratuito");
+					} else {
+						novoJogo.setValor(txtValor.getText());																	
 					}
 
 					modelJogos.addElement(novoJogo.getTitulo());
@@ -268,9 +265,15 @@ public class FrameFormulario extends JFrame {
 				txtTitulo.setText(colecao.listarJogo(indice).getTitulo());
 				
 				if (jogoSelecionado.getValor().equals("Gratuito")) {
-					rdbtnGratis.setEnabled(true);
+					rdbtnGratis.setSelected(true);;
+					txtValor.setEnabled(false);
+					txtValor.setBackground(new Color(211, 211, 211));
+					txtValor.setText("");
 				} else {
 					txtValor.setText(jogoSelecionado.getValor());
+					txtValor.setEnabled(true);
+					rdbtnGratis.setSelected(false);
+					txtValor.setBackground(new Color(255, 255, 255));
 				}
 				
 				comboConsole.setSelectedIndex(jogoSelecionado.getConsole().ordinal());
@@ -289,7 +292,6 @@ public class FrameFormulario extends JFrame {
 	}
 	
 	//criando metodos 
-	//definir console
 	private Consoles definirConsole() {
 		if (comboConsole.getSelectedIndex() == 0) {
 			return Consoles.PC;
@@ -342,13 +344,14 @@ public class FrameFormulario extends JFrame {
 		}
 	}
 
-	
 	private boolean verificarDados() {
 		if (txtTitulo.getText() == null) {
 			return false;
 		} else if (txtValor.getText() == null && rdbtnGratis.isSelected() == false) {
 			return false;
 		} else if (txtObs.getText() == null){
+			return false;
+		} else if(rdbtnZerado.isSelected() == false) {
 			return false;
 		} else {
 			return true;
