@@ -23,7 +23,7 @@ import javax.swing.JButton;
 import javax.swing.JScrollPane;
 import javax.swing.JList;
 import javax.swing.JOptionPane;
-import javax.swing.JTextArea;
+import javax.swing.JEditorPane;
 
 public class FrameFormulario extends JFrame {
 	
@@ -33,7 +33,7 @@ public class FrameFormulario extends JFrame {
 	private FabricanteRepository fabricantes = new FabricanteRepository();
 	private JTextField txtTitulo;
 	private JTextField txtValor;
-	private JTextArea txtObs;
+	private JEditorPane txtObs;
 	private JRadioButton rdbtnGratis;
 	private JRadioButton rdbtnZerado;
 	private JComboBox<String> comboFabricante = new JComboBox<String>();
@@ -43,7 +43,7 @@ public class FrameFormulario extends JFrame {
 	private DefaultComboBoxModel<String> modelConsole = new DefaultComboBoxModel<String>();
 
 	public FrameFormulario() {
-		int tamanhoColecao = Integer.parseInt(JOptionPane.showInputDialog("Por favor, insira o tamanho da coleção:"));
+		int tamanhoColecao = Integer.parseInt(JOptionPane.showInputDialog("Por favor, insira o tamanho da coleÃ§Ã£o:"));
 		colecao = new JogoRepository(tamanhoColecao);
 		
 		setResizable(false);
@@ -183,7 +183,7 @@ public class FrameFormulario extends JFrame {
 //			@Override
 //			public void actionPerformed(ActionEvent e) {	
 //				if (listJogos.isSelectionEmpty()) {
-//					JOptionPane.showMessageDialog(null, "Você deve selecionar um item da lista!", "Presta atenção...!", JOptionPane.WARNING_MESSAGE);
+//					JOptionPane.showMessageDialog(null, "VocÃª deve selecionar um item da lista!", "Presta atenÃ§Ã£o...!", JOptionPane.WARNING_MESSAGE);
 //				} else {
 //					modelJogos.removeRange(listJogos.getMinSelectionIndex(), listJogos.getMaxSelectionIndex());
 //					for (int quantia = listJogos.getMinSelectionIndex(); quantia < listJogos.getMaxSelectionIndex(); quantia++) {
@@ -199,7 +199,7 @@ public class FrameFormulario extends JFrame {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				if (verificarDados() == false) {
-					JOptionPane.showMessageDialog(null, "Preencha os campos de cadastro!", "Tá falando sério?", JOptionPane.ERROR_MESSAGE);
+					JOptionPane.showMessageDialog(null, "Preencha os campos de cadastro!", "TÃ¡ falando sÃ©rio?", JOptionPane.ERROR_MESSAGE);
 				} else {
 					Jogo novoJogo = new Jogo();
 					novoJogo.setTitulo(txtTitulo.getText());
@@ -226,7 +226,7 @@ public class FrameFormulario extends JFrame {
 					
 					if (modelJogos.getSize() == colecao.getTamanho()) {
 						 btnSalvar.setEnabled(false);
-						 JOptionPane.showMessageDialog(null, "Você alcançou o limite da coleção! Delete alguns jogos ou crie uma nova coleção!, ", "Respira...", JOptionPane.ERROR_MESSAGE);
+						 JOptionPane.showMessageDialog(null, "VocÃª alcanÃ§ou o limite da coleÃ§Ã£o! Delete alguns jogos ou crie uma nova coleÃ§Ã£o!, ", "Respira...", JOptionPane.ERROR_MESSAGE);
 					}
 				}
 			}
@@ -236,7 +236,7 @@ public class FrameFormulario extends JFrame {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				if (listJogos.isSelectionEmpty()) {
-					JOptionPane.showMessageDialog(null, "Você deve selecionar um item da lista!", "Calma aí!", JOptionPane.WARNING_MESSAGE);
+					JOptionPane.showMessageDialog(null, "VocÃª deve selecionar um item da lista!", "Calma aÃ­!", JOptionPane.WARNING_MESSAGE);
 				} else {
 					listJogos.setSelectedIndex(listJogos.getSelectedIndex()-1);
 				}
@@ -247,7 +247,7 @@ public class FrameFormulario extends JFrame {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				if (listJogos.isSelectionEmpty()) {
-					JOptionPane.showMessageDialog(null, "Você deve selecionar um item da lista!", "Calma aí!", JOptionPane.WARNING_MESSAGE);
+					JOptionPane.showMessageDialog(null, "VocÃª deve selecionar um item da lista!", "Calma aÃ­!", JOptionPane.WARNING_MESSAGE);
 				} else {
 					listJogos.setSelectedIndex(listJogos.getSelectedIndex()+1);
 				}
